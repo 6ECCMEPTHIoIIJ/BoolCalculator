@@ -4,7 +4,7 @@
 #include <functional>
 #include <iomanip>
 
-constexpr uint8_t kParametersAmount = 5;
+constexpr uint8_t kParametersAmount = 4;
 
 struct Implicant {
   std::string value;
@@ -298,6 +298,16 @@ void printDeadEndCantorForms(const std::vector<size_t>& dead_end_cantor_forms,
 int main() {
   std::setvbuf(stdout, nullptr, _IOFBF, 512);
   std::ios_base::sync_with_stdio(false);
+  // Вариант 4
+//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm(
+//      [](const std::string& x) {
+//        return xor_(diff(x[0] && x[2], x[1] && diff(x[3], x[2])), diff(x[3], x[0]));
+//      });
+  // Вариант 6
+//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm(
+//      [](const std::string& x) {
+//        return diff(diff(xor_(x[2], diff(x[3], x[0])) || x[1],  x[2] && diff(x[1], x[0])), x[3]);
+//      });
   // Вариант 7
   auto cantor_perfect_normal_form = getCantorPerfectNormalForm(
       [](const std::string& x) {
@@ -323,6 +333,6 @@ int main() {
   std::vector<size_t> dead_end_cantor_forms = getDeadEndCantorForms(quine_matrix);
   std::cout << "\nDead end Cantor normal forms\n";
   printDeadEndCantorForms(dead_end_cantor_forms, not_used_implicants);
-//  std::cin.get();
+  std::cin.get();
   return 0;
 }
