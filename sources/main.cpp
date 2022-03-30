@@ -5,8 +5,7 @@
 #include <functional>
 #include <exception>
 #include <stack>
-
-//constexpr uint8_t kParametersAmount = 4;
+#include <iomanip>
 
 struct Constituent {
   std::string value;
@@ -433,62 +432,60 @@ void outForm(const std::vector<Constituent>& form,
 int main() {
   std::setvbuf(stdout, nullptr, _IOFBF, 512);
   std::ios_base::sync_with_stdio(false);
-//  4
-//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm([](std::array<bool, kParametersAmount> x) {
-//    return xor_(diff(x[0] && x[2], x[1] && diff(x[3], x[2])), diff(x[3], x[0]));
-//  });
-//  6
-//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm([](std::array<bool, kParametersAmount> x) {
-//    return diff(diff(xor_(x[2], diff(x[3], x[0])) || x[1],  x[2] && diff(x[1], x[0])), x[3]);
-//  });
-//  7
-  auto expression = getExpression();
-  std::cout << expression.data << '\n';
-  auto cantor_perfect_normal_form = getCantorPerfectNormalForm(expression);
-//  10
-//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm([](std::array<bool, kParametersAmount> x) {
-//    return xor_(xor_(diff(x[2] || x[1], x[3]), diff(x[2], x[1])), x[0]) && x[0];
-//  });
-//  15
-//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm([](std::array<bool, kParametersAmount> x) {
-//    return !xor_(xor_(diff(x[0], xor_(x[1], x[2])) || x[3], diff(x[1], x[0])), x[2]);
-//  });
-//  18
-//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm([](std::array<bool, kParametersAmount> x) {
-//    return diff(xor_(x[1], diff(x[0], x[2])) || x[3], x[0] && diff(x[1], x[2]));
-//  });
-
-//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm([](std::array<bool, kParametersAmount> x) {
-//    return true;
-//  });
-//  auto cantor_perfect_normal_form = getCantorPerfectNormalForm([](std::array<bool, kParametersAmount> x) {
-//    return false;
-//  });
-  std::cout << "\nCantor`s perfect normal form:\n" << cantor_perfect_normal_form;
-  outForm(cantor_perfect_normal_form,
-          expression.parameters_amount);
-  std::cout << "\nGluing constituents:\n";
-  auto cantor_short_normal_form = getCantorShortNormalForm(cantor_perfect_normal_form,
-                                                           expression.parameters_amount);
-  std::cout << "\nCantor`s short normal form:\n" << cantor_short_normal_form;
-  outForm(cantor_short_normal_form,
-          expression.parameters_amount);
-  auto quine_matrix = getQuineMatrix(cantor_perfect_normal_form, cantor_short_normal_form,
-                                     expression.parameters_amount);
-  std::cout << "\nQuine matrix:\n";
-  outQuineMatrix(cantor_perfect_normal_form, cantor_short_normal_form, quine_matrix,
-                 expression.parameters_amount);
-  auto dead_end_cantor_normal_forms = getDeadEndCantorNormalForms(cantor_short_normal_form, getDeadEnds(quine_matrix));
-  std::cout << "\nDead end Cantor`s normal forms:\n";
-  size_t i = 0;
-  for (auto& dead_end_cantor_normal_form: dead_end_cantor_normal_forms) {
-    std::cout << "\n#" << i++ << " form:\n" << dead_end_cantor_normal_form;
-    outForm(dead_end_cantor_normal_form,
+  const size_t kAggregatorWidth = 30;
+  const size_t kLineLength = 50;
+  Expression expression;
+  std::vector<Constituent> cantor_perfect_normal_form, cantor_short_normal_form;
+  std::vector<std::vector<bool>> quine_matrix;
+  std::vector<std::vector<Constituent>> dead_end_cantor_normal_forms;
+  while (true) {
+    std::cout << "Input your expression:\n"
+              << std::setfill('-') << std::setw(kLineLength) << "\n"
+              << std::left << std::setfill(' ')
+              << std::setw(kAggregatorWidth + 8) << "valid names for sets are:" << "[A..Z]\n"
+              << "valid operations are:\n"
+              << std::right << std::setfill(' ')
+              << std::setw(kAggregatorWidth) << "adding to universe" << '|' << std::setw(7) << "(not): " << "! ~\n"
+              << std::setw(kAggregatorWidth) << "intersection" << '|' << std::setw(7) << "(and): " << "& *\n"
+              << std::setw(kAggregatorWidth) << "union" << '|' << std::setw(7) << "(or): " << "| +\n"
+              << std::setw(kAggregatorWidth) << "difference" << '|' << std::setw(7) << ": " << "-\n"
+              << std::setw(kAggregatorWidth) << "symmetric difference" << '|' << std::setw(7) << "(xor): " << "^\n"
+              << std::setw(kAggregatorWidth) << "equality" << '|' << std::setw(7) << ": " << "=\n"
+              << std::setw(kAggregatorWidth) << "brackets" << '|' << std::setw(7) << ": " << "( { [ ) } ]\n"
+              << std::setfill('-') << std::setw(kLineLength) << "\n";
+    expression = getExpression();
+    std::cout << expression.data << '\n';
+    cantor_perfect_normal_form = getCantorPerfectNormalForm(expression);
+    std::cout << "\nCantor`s perfect normal form:\n" << cantor_perfect_normal_form;
+    outForm(cantor_perfect_normal_form,
             expression.parameters_amount);
+    std::cout << "\nGluing constituents:\n";
+    cantor_short_normal_form = getCantorShortNormalForm(cantor_perfect_normal_form,
+                                                             expression.parameters_amount);
+    std::cout << "\nCantor`s short normal form:\n" << cantor_short_normal_form;
+    outForm(cantor_short_normal_form,
+            expression.parameters_amount);
+    quine_matrix = getQuineMatrix(cantor_perfect_normal_form, cantor_short_normal_form,
+                                       expression.parameters_amount);
+    std::cout << "\nQuine matrix:\n";
+    outQuineMatrix(cantor_perfect_normal_form, cantor_short_normal_form, quine_matrix,
+                   expression.parameters_amount);
+    dead_end_cantor_normal_forms = getDeadEndCantorNormalForms(cantor_short_normal_form,
+                                                                    getDeadEnds(quine_matrix));
+    std::cout << "\nDead end Cantor`s normal forms:\n";
+    size_t i = 0;
+    for (auto& dead_end_cantor_normal_form: dead_end_cantor_normal_forms) {
+      std::cout << "\n#" << i++ << " form:\n" << dead_end_cantor_normal_form;
+      outForm(dead_end_cantor_normal_form,
+              expression.parameters_amount);
+    }
+
+    std::cout << "\nDo you want to continue? (Y/N)...\n";
+    char exit_ch;
+    std::cin >> exit_ch;
+    if (exit_ch == 'N') {
+      return 0;
+    }
   }
-
-  std::cin.get();
-
-  return 0;
 }
 
