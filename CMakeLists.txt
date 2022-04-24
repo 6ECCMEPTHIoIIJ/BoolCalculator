@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.23)
 
-set(PROJECT_NAME "lr_1_2") # name of MAIN target
-project(${PROJECT_NAME} VERSION "0.0.1" LANGUAGES C CXX)
+set(PROJECT_NAME "bool_calculator")
+project(${PROJECT_NAME} VERSION "0.3.0" LANGUAGES C CXX)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED on)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
